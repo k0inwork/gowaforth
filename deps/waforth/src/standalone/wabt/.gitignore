@@ -1,0 +1,6 @@
+/waforth
+/waforth_core.h
+/wasm-micro-runtime
+/wasmtime-*
+/*.tgz
+/run_sieve.f

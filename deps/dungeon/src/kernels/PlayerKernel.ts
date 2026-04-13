@@ -1,0 +1,154 @@
+
+// Aethelgard Player Kernel v3.0 (PURE AJS)
+import { STANDARD_KERNEL_FIRMWARE, BLOCK_STANDARD_INBOX } from "./SharedBlocks";
+import { STANDARD_AJS_PREAMBLE, STANDARD_AJS_POSTAMBLE } from "./SharedAJS";
+import { AetherTranspiler } from "../compiler/AetherTranspiler";
+import { KernelID } from "../types/Protocol";
+
+const AJS_LOGIC = `
+${STANDARD_AJS_PREAMBLE}
+
+// 1. MEMORY
+const INV_BASE = 0xC0010; // PLAYER_STRUCT + 16
+const INVENTORY = new Uint32Array(INV_BASE);
+
+// 2. LOGIC
+struct PlayerState {
+    hp,
+    maxHp,
+    gold,
+    invCount,
+    inv0, inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9,
+    inv10, inv11, inv12, inv13, inv14, inv15, inv16, inv17, inv18, inv19,
+    inv20, inv21, inv22, inv23, inv24, inv25, inv26, inv27, inv28, inv29,
+    inv30, inv31
+}
+
+let player_state = new Array(PlayerState, 1, 0xC0000);
+export player_state;
+
+function get_player_ptr() {
+    return PlayerState(0);
+}
+
+function add_item(itemId) {
+    let p = get_player_ptr();
+    if (p.invCount >= 32) {
+        Log("Inventory Full!");
+        return;
+    }
+    
+    INVENTORY[p.invCount] = itemId;
+    
+    p.invCount++;
+    Log("Picked up Item ID:");
+    Log(itemId);
+    Log("Inv Count:");
+    Log(p.invCount);
+}
+
+function on_player_event(op, sender, p1, p2, p3) {
+    switch (op) {
+        case EVT_ITEM_GET:
+            if (p1 == 0) {
+                Log("Picked up Loot!");
+                add_item(p2);
+            }
+            break;
+        case CMD_INTERACT:
+            Log("Using Heavy Smash!");
+            Chan("BUS") <- [CMD_ATTACK, 0, 1, 1];
+            break;
+    }
+}
+
+function on_bus_event(op, sender, p1, p2, p3) {
+    switch (op) {
+        case EVT_COLLIDE:
+            if (p1 == 0) {
+                if (p3 == 0) {
+                    Log("Blocked by Wall.");
+                } else {
+                    Log("Player Hits Enemy! Attacking...");
+                    Chan("BUS") <- [CMD_ATTACK, 0, p2, 0];
+                }
+            }
+            break;
+    }
+}
+
+function on_combat_event(op, sender, p1, p2, p3) {
+    switch (op) {
+        case EVT_DAMAGE:
+            if (p1 == 0) {
+                Log("You dealt damage!");
+            }
+            if (p2 == 0) {
+                Log("Ouch! You took damage!");
+                let p = get_player_ptr();
+                p.hp -= p3; // p3 is dmg amount in combat_events broadcast
+                if (p.hp < 0) p.hp = 0;
+            }
+            break;
+    }
+}
+
+function init_player() {
+    Log("[PLAYER] Initializing...");
+    let p = get_player_ptr();
+    p.hp = 100;
+    p.maxHp = 100;
+    p.gold = 0;
+    p.invCount = 0;
+
+    // Starting items (10-20 items as requested)
+    for (let k = 0; k < 12; k++) {
+        add_item(36); // Gold Coin ($)
+    }
+    add_item(105); // Iron Sword (i)
+    add_item(105); // Iron Sword (i)
+    add_item(97);  // Apple (a)
+    add_item(97);  // Apple (a)
+    add_item(112); // Potion (p)
+
+    Chan().on(on_player_event);
+    Chan("BUS").on(on_bus_event);
+    Chan("combat_events").on(on_combat_event);
+}
+
+function handle_events() {
+    // Channel listeners are injected here
+}
+
+${STANDARD_AJS_POSTAMBLE}
+
+function run_player_cycle() {
+    process_inbox();
+}
+
+function player_boot() {
+    init_player();
+}
+
+player_boot();
+`;
+
+const IS_DEBUG = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).has('debug') : false;
+
+const _PLAYER_COMPILED = AetherTranspiler.transpile(AJS_LOGIC, KernelID.PLAYER, IS_DEBUG);
+
+export const PLAYER_DATA_BLOCKS = [
+    ...STANDARD_KERNEL_FIRMWARE,
+    BLOCK_STANDARD_INBOX,
+    _PLAYER_COMPILED.data
+];
+
+export const PLAYER_LOGIC_BLOCKS = [
+    _PLAYER_COMPILED.logic,
+    ": INIT_PLAYER_AUTO INIT_PLAYER AJS_INIT_CHANNELS ' HANDLE_EVENTS HANDLE_EVENTS_XT ! ;"
+];
+
+export const PLAYER_KERNEL_BLOCKS = [...PLAYER_DATA_BLOCKS, ...PLAYER_LOGIC_BLOCKS];
+export const PLAYER_SYMBOL_TABLE = AetherTranspiler.lastSymbolTable;
+export const PLAYER_AJS_SOURCE = AJS_LOGIC;
+export const PLAYER_FORTH_SOURCE = PLAYER_KERNEL_BLOCKS.join("\n");

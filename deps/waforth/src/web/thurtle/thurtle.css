@@ -1,0 +1,69 @@
+.root {
+  height: 100vh;
+}
+
+.main {
+  height: calc(100% - 40px);
+}
+
+.no-nav .main {
+  height: 100%;
+}
+
+.editor {
+  flex: 1;
+}
+
+.navbar {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.no-nav nav {
+  display: none;
+}
+
+.world {
+  border: thin solid rgb(171, 208, 166);
+  border-radius: 0.5em;
+  background-color: rgb(221, 248, 221);
+  width: 100%;
+}
+
+.world path {
+  fill: white;
+  fill-opacity: 0;
+}
+
+.output {
+  font-size: 0.75em;
+  background-color: #111;
+  color: white;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  height: calc(
+    100vh - 438px
+  ); /* hack because i can't figure out how to auto scale this */
+}
+
+.no-nav .output {
+  height: calc(
+    100vh - 398px
+  ); /* hack because i can't figure out how to auto scale this */
+}
+
+label {
+  font-weight: 500;
+}
+
+.left-pane {
+  flex: 1;
+}
+
+.right-pane {
+  flex: 2;
+}
+
+.copy-url-btn {
+  border: thin solid rgb(206, 212, 218) !important;
+}

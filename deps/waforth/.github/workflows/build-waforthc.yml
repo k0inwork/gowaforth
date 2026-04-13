@@ -1,0 +1,30 @@
+name: Build waforthc
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build-waforthc:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+
+      - if: runner.os == 'macOS' || runner.os == 'Windows'
+        run: make -C src/waforthc package
+        shell: bash
+      - if: runner.os == 'Linux'
+        run: |
+          make -C src/waforthc package \
+            WABT_INCLUDE_DIR=/usr/local/include \
+            WABT_LIB_DIR=/usr/local/lib \
+            WABT_DATA_DIR=/usr/local/share/wabt
+        shell: bash
+
+      - run: make -C src/waforthc check

@@ -1,0 +1,36 @@
+{
+  "name": "game-engine",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:main": "vite build",
+    "build:standalone": "VITE_STANDALONE=true vite build --outDir dist-standalone",
+    "build": "npm run build:main && npm run build:standalone && cp dist-standalone/index.html dist/standalone.html && rm -rf dist-standalone",
+    "preview": "vite preview",
+    "test:kernels": "vitest run --reporter=verbose src/test/GridKernel.test.ts src/test/BattleKernel.test.ts src/test/Transpiler.test.ts",
+    "test:integration": "vitest run --reporter=verbose src/test/Integration.test.ts",
+    "test:analyzer": "python scripts/aethel_analyzer.py",
+    "test": "vitest run --reporter=verbose && npm run test:analyzer"
+  },
+  "dependencies": {
+    "@google/genai": "^1.39.0",
+    "@mlc-ai/web-llm": "^0.2.81",
+    "acorn": "8.11.3",
+    "openai": "^6.27.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "waforth": "0.16.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-singlefile": "^2.3.0",
+    "vitest": "^4.0.18"
+  }
+}

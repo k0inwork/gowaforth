@@ -1,0 +1,17 @@
+.DS_Store
+/.vscode/*.log
+node_modules/
+public/waforth/
+public/thurtle/
+src/waforth.out.wat
+src/web/benchmarks/sieve/sieve-c.js
+build/
+dist/
+*.wasm
+*.wasm.hex
+*.tmp
+*.bin
+*.assembled.wat
+*.o
+/run_sieve
+/run_sieve.c

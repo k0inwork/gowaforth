@@ -1,0 +1,19 @@
+name: Build Standalone
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build-standalone:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - run: make -C src/standalone install-deps package
+      - run: make -C src/standalone check

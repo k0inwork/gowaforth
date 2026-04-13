@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "strict": true,
+    "target": "es2015",
+    "typeRoots": ["./src/web/types"],
+    "types": ["node"],
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["src/web/waforth.ts", "src/web/types"],
+  "exclude": ["node_modules", "dist", "build"]
+}

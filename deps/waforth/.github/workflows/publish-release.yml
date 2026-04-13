@@ -1,0 +1,19 @@
+name: Publish Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

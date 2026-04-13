@@ -1,0 +1,63 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  color: rgb(33, 37, 41);
+}
+
+.text-cell code {
+  color: #d63384;
+}
+
+blockquote {
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  background-color: rgb(225, 242, 254);
+  color: rgb(23, 70, 127);
+}
+
+blockquote p {
+  margin: 0;
+}
+
+.banner {
+  color: #aaa;
+  text-align: center;
+  font-size: 0.8em;
+  margin-top: 1em;
+}
+
+.banner a {
+  color: #aaa;
+}
+
+.banner a:hover {
+  color: #aaa;
+}
+
+.content {
+  max-width: 45em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0em 22px;
+}
+
+code.raw-code-cell {
+  font-family: monospace;
+  padding: 0.5em 1em;
+  display: block;
+  white-space: pre;
+  background-color: #eee;
+}
+
+.all-controls {
+  float: right;
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
