@@ -127,6 +127,9 @@ function emit(ast) {
 
     switch (node.tag) {
       case 'package': break;
+      case 'block':
+        walk(node.list || node.List);
+        break;
       case 'func':
         forth += `: ${node.name} \n`;
         symbolTable.pushScope();
@@ -172,31 +175,32 @@ function emit(ast) {
       case 'switch':
         if (node.tag === 'switch') {
            if (node.init) walk(node.init);
-           if (node.expr) walk(node.expr);
+           const switchExpr = node.expr || node.condition;
+           if (switchExpr) walk(switchExpr);
            else forth += "1 "; 
            
-           const cases = Array.isArray(node.body) ? node.body : (node.body && node.body.list ? node.body.list : []);
+           const cases = node.cases || (Array.isArray(node.body) ? node.body : (node.body ? (node.body.list || node.body.List || []) : []));
            let caseCount = 0;
            let defaultCase = null;
 
            cases.forEach(cas => {
-             if (cas.tag === 'case') {
-               const vals = cas.list || cas.values || [];
+             if (cas.tag === 'case' || cas.tag === 'CaseClause') {
+               const vals = cas.list || cas.List || cas.values || (cas.condition ? [cas.condition] : []);
                vals.forEach(val => {
                  forth += "DUP ";
                  walk(val);
                  forth += "= IF \n";
-                 walk(cas.body);
+                 walk(cas.body || cas.Body);
                  forth += "ELSE \n";
                  caseCount++;
                });
-             } else if (cas.tag === 'default') {
+             } else if (cas.tag === 'default' || (cas.tag === 'CaseClause' && !cas.List && !cas.condition)) {
                defaultCase = cas;
              }
            });
 
            if (defaultCase) {
-             walk(defaultCase.body);
+             walk(defaultCase.body || defaultCase.Body);
            }
 
            for (let k = 0; k < caseCount; k++) {

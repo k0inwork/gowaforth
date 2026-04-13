@@ -87,6 +87,9 @@ func main() {
   const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('repoUrl') || '');
   const [token, setToken] = useState(() => localStorage.getItem('token') || '');
 
+  const [showSettings, setShowSettings] = useState(false);
+  const [showPipelineYaml, setShowPipelineYaml] = useState(false);
+
   const log = (message: string) => {
     setPipelineLogs((prev) => [...prev, message]);
   };
@@ -259,6 +262,9 @@ function emit(ast) {
 
     switch (node.tag) {
       case 'package': break;
+      case 'block':
+        walk(node.list || node.List);
+        break;
       case 'func':
         forth += ": " + node.name + " \\n";
         symbolTable.pushScope();
@@ -299,31 +305,32 @@ function emit(ast) {
       case 'switch':
         if (node.tag === 'switch') {
            if (node.init) walk(node.init);
-           if (node.expr) walk(node.expr);
+           const switchExpr = node.expr || node.condition;
+           if (switchExpr) walk(switchExpr);
            else forth += "1 "; 
            
-           const cases = Array.isArray(node.body) ? node.body : (node.body && node.body.list ? node.body.list : []);
+           const cases = node.cases || (Array.isArray(node.body) ? node.body : (node.body ? (node.body.list || node.body.List || []) : []));
            let caseCount = 0;
            let defaultCase = null;
 
            cases.forEach(cas => {
-             if (cas.tag === 'case') {
-               const vals = cas.list || cas.values || [];
+             if (cas.tag === 'case' || cas.tag === 'CaseClause') {
+               const vals = cas.list || cas.List || cas.values || (cas.condition ? [cas.condition] : []);
                vals.forEach(val => {
                  forth += "DUP ";
                  walk(val);
                  forth += "= IF \\n";
-                 walk(cas.body);
+                 walk(cas.body || cas.Body);
                  forth += "ELSE \\n";
                  caseCount++;
                });
-             } else if (cas.tag === 'default') {
+             } else if (cas.tag === 'default' || (cas.tag === 'CaseClause' && !cas.List && !cas.condition)) {
                defaultCase = cas;
              }
            });
 
            if (defaultCase) {
-             walk(defaultCase.body);
+             walk(defaultCase.body || defaultCase.Body);
            }
 
            for (let k = 0; k < caseCount; k++) {
@@ -547,36 +554,62 @@ console.log('Node.js tests completed successfully.');
     <div className="p-4 border rounded shadow">
       <h2 className="text-xl font-bold mb-4">Go-to-Forth Compiler & Pipeline</h2>
       
-      <div className="mb-4">
-        <h3 className="font-bold">Git Settings:</h3>
-        <input 
-          className="w-full p-2 border mb-2" 
-          placeholder="Repo URL (e.g. user/repo)" 
-          value={repoUrl} 
-          onChange={(e) => setRepoUrl(e.target.value)} 
-          onBlur={(e) => setRepoUrl(cleanRepoUrl(e.target.value))}
-        />
-        <input className="w-full p-2 border mb-2" type="password" placeholder="GitHub Token" value={token} onChange={(e) => setToken(e.target.value)} />
+      <div className="mb-4 border rounded p-2 bg-gray-50">
+        <button 
+          className="flex items-center justify-between w-full font-bold text-sm text-gray-600 uppercase tracking-wider"
+          onClick={() => setShowSettings(!showSettings)}
+        >
+          <span>Git Settings</span>
+          <span>{showSettings ? '−' : '+'}</span>
+        </button>
+        
+        {showSettings && (
+          <div className="mt-4">
+            <input 
+              className="w-full p-2 border mb-2 bg-white" 
+              placeholder="Repo URL (e.g. user/repo)" 
+              value={repoUrl} 
+              onChange={(e) => setRepoUrl(e.target.value)} 
+              onBlur={(e) => setRepoUrl(cleanRepoUrl(e.target.value))}
+            />
+            <input className="w-full p-2 border mb-2 bg-white" type="password" placeholder="GitHub Token" value={token} onChange={(e) => setToken(e.target.value)} />
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <h3 className="font-bold mb-2">Go Source:</h3>
           <textarea
             className="w-full p-2 border font-mono text-sm"
-            rows={10}
+            rows={12}
             value={goSource}
             onChange={(e) => setGoSource(e.target.value)}
           />
         </div>
         <div>
-          <h3 className="font-bold mb-2">Pipeline YAML:</h3>
-          <textarea
-            className="w-full p-2 border font-mono text-sm"
-            rows={10}
-            value={pipelineYaml}
-            onChange={(e) => setPipelineYaml(e.target.value)}
-          />
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold">Pipeline YAML:</h3>
+            <button 
+              className="text-xs text-blue-500 hover:underline"
+              onClick={() => setShowPipelineYaml(!showPipelineYaml)}
+            >
+              {showPipelineYaml ? 'Collapse' : 'Expand'}
+            </button>
+          </div>
+          {showPipelineYaml ? (
+            <textarea
+              className="w-full p-2 border font-mono text-sm"
+              rows={12}
+              value={pipelineYaml}
+              onChange={(e) => setPipelineYaml(e.target.value)}
+            />
+          ) : (
+            <div className="p-2 border bg-gray-50 text-xs text-gray-500 font-mono h-[282px] overflow-hidden">
+              {pipelineYaml.split('\n').slice(0, 5).join('\n')}
+              {'\n...'}
+            </div>
+          )}
         </div>
       </div>
       
