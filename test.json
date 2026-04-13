@@ -1,0 +1,45 @@
+[
+  {
+    "tag": "package",
+    "name": "main"
+  },
+  {
+    "tag": "func",
+    "receiver": null,
+    "name": "main",
+    "args": [],
+    "returns": [],
+    "body": [
+      {
+        "tag": "exec",
+        "expr": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "call",
+              "func": {
+                "tag": "access",
+                "struct": {
+                  "tag": "ident",
+                  "value": "fmt"
+                },
+                "member": "Println"
+              },
+              "args": [
+                {
+                  "tag": "expr",
+                  "body": [
+                    {
+                      "tag": "string",
+                      "value": "\"Hello\""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

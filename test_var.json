@@ -1,0 +1,55 @@
+[
+  {
+    "tag": "package",
+    "name": "main"
+  },
+  {
+    "tag": "func",
+    "receiver": null,
+    "name": "main",
+    "args": [],
+    "returns": [],
+    "body": [
+      {
+        "tag": "declare",
+        "names": [
+          "x"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "1"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "assign",
+        "lhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "ident",
+              "value": "x"
+            }
+          ]
+        },
+        "rhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

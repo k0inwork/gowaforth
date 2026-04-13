@@ -1,0 +1,7 @@
+{
+  "name": "go2json",
+  "version": "1.0.0",
+  "bin": {
+    "go2json": "go2json.js"
+  }
+}

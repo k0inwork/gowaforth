@@ -8,11 +8,13 @@
  */
 
 export function transpile(goSource: string): string {
-    // For now, let's just return a simple Forth word that prints "Hello, World!"
-    // This will be our first test case.
     return `
+( Local transpilation is a placeholder. )
+( Use "Push & Run Pipeline" to see the full Go-to-Forth transpilation )
+( using the GitHub Actions pipeline with go2json AST parsing. )
+
 : main
-  ." Hello, World!" cr ;
+  S" Hello from local placeholder!" TYPE CR ;
 main
 `;
 }

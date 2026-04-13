@@ -1,6 +1,12 @@
-type JSXElement<T> = Omit<Partial<T>, "children"> & {
+type JSXElement<T> = {
+  [K in keyof T]?: any;
+} & {
   class?: string;
   role?: string;
+  children?: any;
+  className?: string;
+  style?: any;
+  [key: string]: any;
 };
 
 declare global {

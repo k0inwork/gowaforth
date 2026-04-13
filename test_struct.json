@@ -1,0 +1,141 @@
+[
+  {
+    "tag": "package",
+    "name": "main"
+  },
+  {
+    "tag": "typedef",
+    "name": "Rect",
+    "fields": [
+      {
+        "name": "Width",
+        "type": {
+          "tag": "int"
+        }
+      },
+      {
+        "name": "Height",
+        "type": {
+          "tag": "int"
+        }
+      }
+    ],
+    "embeds": []
+  },
+  {
+    "tag": "func",
+    "receiver": null,
+    "name": "main",
+    "args": [],
+    "returns": [],
+    "body": [
+      {
+        "tag": "declare",
+        "names": [
+          "r"
+        ],
+        "value": null,
+        "type": {
+          "tag": "Rect"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "assign",
+        "lhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "access",
+              "struct": {
+                "tag": "ident",
+                "value": "r"
+              },
+              "member": "Width"
+            }
+          ]
+        },
+        "rhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      {
+        "tag": "assign",
+        "lhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "access",
+              "struct": {
+                "tag": "ident",
+                "value": "r"
+              },
+              "member": "Height"
+            }
+          ]
+        },
+        "rhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "20"
+            }
+          ]
+        }
+      },
+      {
+        "tag": "exec",
+        "expr": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "call",
+              "func": {
+                "tag": "access",
+                "struct": {
+                  "tag": "ident",
+                  "value": "fmt"
+                },
+                "member": "Println"
+              },
+              "args": [
+                {
+                  "tag": "expr",
+                  "body": [
+                    {
+                      "tag": "access",
+                      "struct": {
+                        "tag": "ident",
+                        "value": "r"
+                      },
+                      "member": "Width"
+                    },
+                    {
+                      "tag": "op",
+                      "value": "*"
+                    },
+                    {
+                      "tag": "access",
+                      "struct": {
+                        "tag": "ident",
+                        "value": "r"
+                      },
+                      "member": "Height"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,205 @@
+import * as duplex from "@progrium/duplex";
+
+export class WanixHandle {
+    constructor(port) {
+        const sess = new duplex.Session(new duplex.PortConn(port));
+        this.peer = new duplex.Peer(sess, new duplex.CBORCodec());
+    }
+
+    async readDir(name) {
+        return (await this.peer.call("ReadDir", [name])).value;
+    }
+
+    async makeDir(name) {
+        await this.peer.call("Mkdir", [name]);
+    }
+
+    async makeDirAll(name) {
+        await this.peer.call("MkdirAll", [name]);
+    }
+
+    async bind(name, newname) {
+        await this.peer.call("Bind", [name, newname]);
+    }
+
+    async unbind(name, newname) {
+        await this.peer.call("Unbind", [name, newname]);
+    }
+    
+    async readFile(name) {
+        return (await this.peer.call("ReadFile", [name])).value;
+    }
+
+    // not sure if readFile approach is good, but this is an option for now
+    async readFile2(name) {
+        const rd = await this.openReadable(name);
+        const response = new Response(rd); // cute trick
+        return new Uint8Array(await response.arrayBuffer());
+    }
+
+    async readText(name) {
+        return (new TextDecoder()).decode(await this.readFile(name));
+    }
+
+    async waitFor(name, timeoutMs=1000) {
+        await this.peer.call("WaitFor", [name, timeoutMs]);
+    }
+
+    async stat(name) {
+        return (await this.peer.call("Stat", [name])).value;
+    }
+
+    async writeFile(name, contents) {
+        if (typeof contents === "string") {
+            contents = (new TextEncoder()).encode(contents);
+        }
+        return (await this.peer.call("WriteFile", [name, contents])).value;
+    }
+
+    async appendFile(name, contents) {
+        if (typeof contents === "string") {
+            contents = (new TextEncoder()).encode(contents);
+        }
+        return (await this.peer.call("AppendFile", [name, contents])).value;
+    }
+
+    async rename(oldname, newname) {
+        await this.peer.call("Rename", [oldname, newname]);
+    }
+
+    async copy(oldname, newname) {
+        await this.peer.call("Copy", [oldname, newname]);
+    }
+
+    async remove(name) {
+        await this.peer.call("Remove", [name]);
+    }
+
+    async removeAll(name) {
+        await this.peer.call("RemoveAll", [name]);
+    }
+
+    async truncate(name, size) {
+        await this.peer.call("Truncate", [name, size]);
+    }
+
+    async create(name) {
+        return (await this.peer.call("Create", [name])).value;
+    }
+
+    async open(name) {
+        return (await this.peer.call("Open", [name])).value;
+    }
+
+    async openFile(name, flags, mode) {
+        return (await this.peer.call("OpenFile", [name, flags, mode])).value;
+    }
+
+    async read(fd, count) {
+        return (await this.peer.call("Read", [fd, count])).value;
+    }
+
+    async write(fd, data) {
+        return (await this.peer.call("Write", [fd, data])).value;
+    }
+
+    async writeAt(fd, data, offset) {
+        return (await this.peer.call("WriteAt", [fd, data, offset])).value;
+    }
+
+    async close(fd) {
+        return (await this.peer.call("Close", [fd])).value;
+    }
+
+    async sync(fd) {
+        return (await this.peer.call("Sync", [fd])).value;
+    }
+
+    async fstat(fd) {
+        return (await this.peer.call("Fstat", [fd])).value;
+    }
+
+    async lstat(name) {
+        return (await this.peer.call("Lstat", [name])).value;
+    }
+
+    async chmod(name, mode) {
+        await this.peer.call("Chmod", [name, mode]);
+    }
+
+    async chown(name, uid, gid) {
+        await this.peer.call("Chown", [name, uid, gid]);
+    }
+
+    async fchmod(fd, mode) {
+        await this.peer.call("Fchmod", [fd, mode]);
+    }
+
+    async fchown(fd, uid, gid) {
+        await this.peer.call("Fchown", [fd, uid, gid]);
+    }
+
+    async ftruncate(fd, length) {
+        await this.peer.call("Ftruncate", [fd, length]);
+    }
+
+    async readlink(name) {
+        return (await this.peer.call("Readlink", [name])).value;
+    }
+
+    async symlink(oldname, newname) {
+        await this.peer.call("Symlink", [oldname, newname]);
+    }
+
+    async chtimes(name, atime, mtime) {
+        await this.peer.call("Chtimes", [name, atime, mtime]);
+    }
+
+    async openReadable(name) {
+        const fd = await this.open(name);
+        return this.readable(fd);
+    }
+
+    async openWritable(name) {
+        const fd = await this.openFile(name, 1, 0);
+        return this.writable(fd);
+    }
+
+    writable(fd) {
+        const self = this;
+        return new WritableStream({
+            write(chunk) {
+                return self.write(fd, chunk);
+            },
+        });
+    }
+
+    readable(fd) {
+        const self = this;
+        return new ReadableStream({
+            async pull(controller) {
+                const data = await self.read(fd, 1024);
+                if (data === null) {
+                    controller.close();
+                }
+                controller.enqueue(data);
+            },
+        });
+    }
+}
+
+// for safari
+if (!ReadableStream.prototype[Symbol.asyncIterator]) {
+    ReadableStream.prototype[Symbol.asyncIterator] = async function* () {
+        const reader = this.getReader();
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) return;
+                yield value;
+            }
+        } finally {
+            reader.releaseLock();
+        }
+    };
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "tag": "package",
+    "name": "main"
+  },
+  {
+    "tag": "func",
+    "receiver": null,
+    "name": "main",
+    "args": [],
+    "returns": [],
+    "body": [
+      {
+        "tag": "declare",
+        "names": [
+          "x"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "10"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "declare",
+        "names": [
+          "p"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "op",
+              "value": "&"
+            },
+            {
+              "tag": "ident",
+              "value": "x"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "assign",
+        "lhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "op",
+              "value": "*"
+            },
+            {
+              "tag": "ident",
+              "value": "p"
+            }
+          ]
+        },
+        "rhs": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "20"
+            }
+          ]
+        }
+      },
+      {
+        "tag": "exec",
+        "expr": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "call",
+              "func": {
+                "tag": "access",
+                "struct": {
+                  "tag": "ident",
+                  "value": "fmt"
+                },
+                "member": "Println"
+              },
+              "args": [
+                {
+                  "tag": "expr",
+                  "body": [
+                    {
+                      "tag": "ident",
+                      "value": "x"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

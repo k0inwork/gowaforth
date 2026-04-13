@@ -1,0 +1,164 @@
+[
+  {
+    "tag": "package",
+    "name": "main"
+  },
+  {
+    "tag": "func",
+    "receiver": null,
+    "name": "main",
+    "args": [],
+    "returns": [],
+    "body": [
+      {
+        "tag": "declare",
+        "names": [
+          "x"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "1"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "declare",
+        "names": [
+          "y"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "2"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "declare",
+        "names": [
+          "z"
+        ],
+        "value": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "number",
+              "value": "1"
+            },
+            {
+              "tag": "op",
+              "value": "+"
+            },
+            {
+              "tag": "number",
+              "value": "2"
+            },
+            {
+              "tag": "op",
+              "value": "+"
+            },
+            {
+              "tag": "ident",
+              "value": "x"
+            },
+            {
+              "tag": "op",
+              "value": "*"
+            },
+            {
+              "tag": "number",
+              "value": "3"
+            }
+          ]
+        },
+        "type": {
+          "tag": "auto"
+        },
+        "isconst": false
+      },
+      {
+        "tag": "exec",
+        "expr": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "call",
+              "func": {
+                "tag": "access",
+                "struct": {
+                  "tag": "ident",
+                  "value": "fmt"
+                },
+                "member": "Println"
+              },
+              "args": [
+                {
+                  "tag": "expr",
+                  "body": [
+                    {
+                      "tag": "ident",
+                      "value": "x"
+                    },
+                    {
+                      "tag": "op",
+                      "value": "+"
+                    },
+                    {
+                      "tag": "ident",
+                      "value": "y"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "tag": "exec",
+        "expr": {
+          "tag": "expr",
+          "body": [
+            {
+              "tag": "call",
+              "func": {
+                "tag": "access",
+                "struct": {
+                  "tag": "ident",
+                  "value": "fmt"
+                },
+                "member": "Println"
+              },
+              "args": [
+                {
+                  "tag": "expr",
+                  "body": [
+                    {
+                      "tag": "ident",
+                      "value": "z"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -166,10 +166,11 @@ export class AetherTranspiler {
       return combined as any;
     } catch (e: any) {
       console.error("Transpilation Failed:", e);
-      const strObj = new String(`( ERROR: ${e.message} )`) as any;
-      strObj.data = `( ERROR: ${e.message} )`;
+      const errorMsg = `( ERROR: ${e.message} )`;
+      const strObj = new String(errorMsg) as any;
+      strObj.data = errorMsg;
       strObj.logic = "";
-      return combined as any;
+      return errorMsg as any;
     }
   }
 
