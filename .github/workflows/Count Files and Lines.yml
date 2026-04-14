@@ -1,0 +1,25 @@
+name: Count Files and Lines
+on:
+  push:
+    branches:
+      - fleet-temp-1776133939600
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo and count
+        run: >
+          git clone https://github.com/k0inwork/test.git /tmp/test-repo
+
+          cd /tmp/test-repo
+
+          FILE_COUNT=$(find . -type f | wc -l)
+
+          LINE_COUNT=$(find . -type f -exec cat {} + | wc -l)
+
+          echo "=== MARKER_START ==="
+
+          echo "DATA_JSON:{\\"file_count\\": $FILE_COUNT, \\"line_count\\":
+          $LINE_COUNT}"
+
+          echo "=== MARKER_END ==="
